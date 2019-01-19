@@ -4,6 +4,9 @@ import codegen.slick.{HugeRepository, SmallRepositoryFull, SmallRepositoryLight}
 import utils.FileUtils._
 import java.io.File
 
+import scala.collection.immutable.{ListMap, TreeMap}
+import scala.collection.mutable
+
 object CodeGenerator {
 
 
@@ -16,6 +19,11 @@ object CodeGenerator {
     val file_content = from.read()
     val case_class = caseClassToMap(file_content)
     generate_and_persist(to_path, case_class.name, case_class.fields)
+  }
+
+  def generate_from_case_class(case_class_content:String, light:Boolean = true):String = {
+    val case_class = caseClassToMap(case_class_content)
+    generate(case_class.name, case_class.fields, light)
   }
 
   private[this] case class CaseClassData(name:String, fields:Map[String, String])
@@ -34,8 +42,9 @@ object CodeGenerator {
           val c_name = a_field.head.trim
           val c_type = a_field.last.trim
           (c_name, c_type)
-        }.toMap
-        CaseClassData(name, fields)
+        }
+        val f_map = ListMap( fields : _* )
+        CaseClassData(name, f_map)
       }
     }
   }

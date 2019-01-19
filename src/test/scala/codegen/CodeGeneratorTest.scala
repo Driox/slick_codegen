@@ -8,7 +8,48 @@ import test.helper.ScalatestHelper
 
 class CodeGeneratorTest extends FlatSpec with Matchers with ScalatestHelper {
 
+  "The case class generator " should "generate code from case class mono line" in {
+      val case_class_content =
+        s"""
+case class User( id: String, email: String, password: String, created_at: DateTime, deleted_at: Option[DateTime], tag: Option[String], custom: Option[JsObject] )
+       """
+      val result = CodeGenerator.generate_from_case_class(case_class_content, true)
+      result should equal(generate_small_light_code)(after being whiteSpaceNormalised)
+    }
+
+  "The case class generator " should    "generate code from case class multi line" in {
+      val case_class_content =
+        s"""
+case class User( id: String,
+email: String,
+  password: String,
+created_at: DateTime,
+    deleted_at: Option[DateTime],
+tag: Option[String],
+custom: Option[JsObject]
+)
+       """
+      val result = CodeGenerator.generate_from_case_class(case_class_content, false)
+      result should equal(generate_small_heavy_code)(after being whiteSpaceNormalised)
+  }
+
   "The basic generator" should "generate heavy code from small Map" in {
+      val name = "user"
+      val input: Map[String, String] = ListMap(
+        "id" -> "String",
+        "email" -> "String",
+        "password" -> "String",
+        "created_at" -> "DateTime",
+        "deleted_at" -> "Option[DateTime]",
+        "tag" -> "Option[String]",
+        "custom" -> "Option[JsObject]"
+      )
+      val result = CodeGenerator.generate(name, input, false)
+
+      result should equal(generate_small_heavy_code)(after being whiteSpaceNormalised)
+  }
+
+  "The basic generator" should "generate light code from small Map" in {
     val name = "user"
     val input:Map[String, String] = ListMap(
       "id" -> "String",
@@ -19,10 +60,11 @@ class CodeGeneratorTest extends FlatSpec with Matchers with ScalatestHelper {
       "tag" -> "Option[String]",
       "custom" -> "Option[JsObject]"
     )
-    val result = CodeGenerator.generate(name, input, false)
+    val result = CodeGenerator.generate(name, input, true)
 
-    result should equal (generate_small_heavy_code) (after being whiteSpaceNormalised)
+    result should equal (generate_small_light_code) (after being whiteSpaceNormalised)
   }
+
 
   private[this] val generate_small_heavy_code =
     """
@@ -145,22 +187,6 @@ trait UserComponent extends TableMapping {
   }
 }
 """
-
-  "The basic generator" should "generate light code from small Map" in {
-    val name = "user"
-    val input:Map[String, String] = ListMap(
-      "id" -> "String",
-      "email" -> "String",
-      "password" -> "String",
-      "created_at" -> "DateTime",
-      "deleted_at" -> "Option[DateTime]",
-      "tag" -> "Option[String]",
-      "custom" -> "Option[JsObject]"
-    )
-    val result = CodeGenerator.generate(name, input, true)
-
-    result should equal (generate_small_light_code) (after being whiteSpaceNormalised)
-  }
 
   private[this] val generate_small_light_code = """
 package models
