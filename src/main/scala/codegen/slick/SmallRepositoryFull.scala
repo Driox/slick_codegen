@@ -17,44 +17,27 @@ import org.joda.time.{DateTimeZone, DateTime}
 import utils.DateUtils._
 import play.api.libs.json.JsObject
 import utils.StringUtils
-import models.FinancialProduct
+import models.${name}
 import slick.model.ForeignKeyAction
 
 // AUTO-GENERATED Slick data model
 /** Stand-alone Slick data model for immediate use */
 object ${name}Repository extends {
   val profile = slick.driver.PostgresDriver
-} with FinancialProductRepository
+} with ${name}Repository
 
 /** Slick data model trait for extension, choice of backend or usage in the cake pattern. (Make sure to initialize this late.) */
 trait ${name}Repository {
   import models.dao._
-  import models.dao.ParticeepDrivers.db_driver._
-  import driver.api._
+  import EnhancedPostgresDriver.api._
 
   // NOTE: GetResult mappers for plain SQL are only generated for tables where Slick knows how to map the types of all columns.
   import slick.jdbc.{GetResult => GR}
 
   /** GetResult implicit for fetching ${name} objects using plain SQL queries */
 
+  ${generate_GR(name, input)}
 
-  implicit def GetResult${name}(implicit ${generate_GR(name, input)}): GR[${name}] = GR {
-    prs =>
-      import prs._
-      (${name}.apply _).tupled((
-        ${
-      input.map {
-        case (c_name, c_type) => {
-          if (c_type.startsWith("Option[")) {
-            s"<<${c_type.replaceFirst("Option", "?")}"
-          } else {
-            s"<<[${c_type}]"
-          }
-        }
-      }.mkString(",\n")
-    }
-      ))
-  }
   /** Table description of table ${table_name}. Objects of this class serve as prototypes for rows in queries. */
   class ${name}Table(_tableTag: Tag) extends Table[${name}](_tableTag, "${table_name}") ${generate_table_helper(input)} {
     def * = ( ${input.keys.mkString(", ")} ) <> ((${name}.apply _).tupled, ${name}.unapply)
@@ -88,12 +71,12 @@ trait ${name}Component extends TableMapping {
   private[this] def generate_optional_projection(name: String, input: Map[String, String]): String = {
     val type_list = input.map {
       case (c_name, c_type) if (c_type.startsWith("Option[")) => c_name
-      case (c_name, c_type)                                   => s"Rep.some($c_name)"
+      case (c_name, c_type)                                   => s"Rep.Some($c_name)"
     }.mkString(",\n")
 
     val tupled_list = input.zipWithIndex.map {
-      case ((_, c_type), i) if (c_type.startsWith("Option[")) => s"_$i"
-      case ((_, _), i)                                        => s"_$i.get"
+      case ((_, c_type), i) if (c_type.startsWith("Option[")) => s"_${i+1}"
+      case ((_, _), i)                                        => s"_${i+1}.get"
     }.mkString(",\n")
 
     s"""

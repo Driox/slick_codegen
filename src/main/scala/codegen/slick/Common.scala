@@ -14,7 +14,7 @@ trait Common {
 
   private[this] def additionnal_options(name: String): String = {
     name match {
-      case "id" => ", O.PrimaryKey, O.Length(36, varying = true"
+      case "id" => ", O.PrimaryKey, O.Length(36, varying = true)"
       case _    => ""
     }
   }
