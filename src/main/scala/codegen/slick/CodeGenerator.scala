@@ -29,6 +29,7 @@ object CodeGenerator {
   private[this] case class CaseClassData(name:String, fields:Map[String, String])
   private[this] def caseClassToMap(case_class_string:String):CaseClassData = {
     val one_line = case_class_string
+      .replaceAll("=.*,", ",")
       .replaceAll("\n", "")
       .replaceAll("\r", "")
       .trim()
