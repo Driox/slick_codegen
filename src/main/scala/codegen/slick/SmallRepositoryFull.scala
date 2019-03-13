@@ -22,12 +22,12 @@ import slick.model.ForeignKeyAction
 
 // AUTO-GENERATED Slick data model
 /** Stand-alone Slick data model for immediate use */
-object ${name}Repository extends {
+object ${name}Dao extends {
   val profile = slick.driver.PostgresDriver
-} with ${name}Repository
+} with ${name}Dao
 
 /** Slick data model trait for extension, choice of backend or usage in the cake pattern. (Make sure to initialize this late.) */
-trait ${name}Repository {
+trait ${name}Dao {
   import models.dao._
   import EnhancedPostgresDriver.api._
 
@@ -48,21 +48,6 @@ trait ${name}Repository {
   }
   /** Collection-like TableQuery object for table financialProducts */
   lazy val ${lowerCaseFirstLetter(name)}s = new TableQuery(tag => new ${name}Table(tag))
-}
-
-
-/** Slick data model trait for extension, choice of backend or usage in the cake pattern. (Make sure to initialize this late.) */
-trait ${name}Component extends TableMapping {
-  self: HasDatabaseConfig[EnhancedPostgresDriver] =>
-
-  import profile.api._
-
-  class ${name}Table(tag: Tag) extends Table[${name}](tag, "${table_name}") with TableHelper {
-
-    ${generateColumn(input)}
-
-    def * = (${input.keys.mkString(", ")}) <> (${name}.tupled, ${name}.unapply _)
-  }
 }
 
 """

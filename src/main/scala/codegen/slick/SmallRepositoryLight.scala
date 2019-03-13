@@ -13,12 +13,12 @@ import play.api.db.slick.HasDatabaseConfig
 import models.dao.EnhancedPostgresDriver
 import play.api.libs.json.JsObject
 
-trait ${name}Component extends TableMapping {
+trait ${name}Dao extends TableMapping {
   self: HasDatabaseConfig[EnhancedPostgresDriver] =>
 
   import profile.api._
 
-  class ${name}Table(tag: Tag) extends Table[${name}](tag, "${table_name}") with TableHelper {
+  class ${name}Table(_tableTag: Tag) extends Table[${name}](_tableTag, "${table_name}") with TableHelper {
 
     ${generateColumn(input)}
 
@@ -26,6 +26,21 @@ trait ${name}Component extends TableMapping {
   }
 
 }
+
+@Singleton
+class ${name}Repository @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)
+    extends HasDatabaseConfigProvider[EnhancedPostgresDriver]
+    with CrudRepository[${name}, EnhancedPostgresDriver]
+    with EntityWithTableLifecycle[EnhancedPostgresDriver]
+    with ${name}Dao {
+
+  import profile.api._
+
+  val tables = TableQuery[${name}Table]
+  type TableType = ${name}Table
+
+}
+
 """
   }
 }
