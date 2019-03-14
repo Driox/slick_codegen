@@ -59,12 +59,12 @@ import utils.StringUtils
 
 // AUTO-GENERATED Slick data model
 /** Stand-alone Slick data model for immediate use */
-object UserRepository extends {
+object UserDao extends {
   val profile = slick.driver.PostgresDriver
-} with UserRepository
+} with UserDao
 
 /** Slick data model trait for extension, choice of backend or usage in the cake pattern. (Make sure to initialize this late.) */
-trait UserRepository {
+trait UserDao {
 
   import models.dao.ParticeepDrivers.db_driver._
   import driver.api._
@@ -90,7 +90,7 @@ trait UserRepository {
   class UserTable(_tableTag: Tag) extends Table[User](_tableTag, "user") with TableHelper with TableHelperContext with TableHelperDeletable {
 
     def * = (id :: created_at :: deleted_at :: created_by :: email :: gender :: first_name :: last_name :: avatar_url :: birthday :: birth_place :: birth_country :: phone :: nationality :: bio :: sector :: investor_type :: linkedin_url :: does_pay_taxes :: has_been_claimed :: city :: wallet_id :: wallet_updated_at :: wallet_type :: status :: roles :: investor_score :: targeting_roles :: tag :: custom :: HNIL <> (User.apply, User.unapply)
-    val id = column[String]("id", O.PrimaryKey, O.Length(36, varying = true)
+    val id = column[String]("id", O.PrimaryKey, O.Length(36, varying = true))
     val created_at = column[DateTime]("created_at")
     val deleted_at = column[Option[DateTime]]("deleted_at")
     val created_by = column[Option[String]]("created_by")

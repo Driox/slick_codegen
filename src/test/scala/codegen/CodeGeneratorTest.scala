@@ -17,7 +17,7 @@ case class User( id: String, email: String, password: String, created_at: DateTi
       result should equal(generate_small_light_code)(after being whiteSpaceNormalised)
     }
 
-  "The case class generator " should    "generate code from case class multi line" in {
+  "The case class generator " should "generate code from case class multi line" in {
       val case_class_content =
         s"""
 case class User( id: String,
@@ -45,7 +45,6 @@ custom: Option[JsObject]
         "custom" -> "Option[JsObject]"
       )
       val result = CodeGenerator.generate(name, input, false)
-
       result should equal(generate_small_heavy_code)(after being whiteSpaceNormalised)
   }
 
@@ -81,20 +80,19 @@ import org.joda.time.{DateTimeZone, DateTime}
 import utils.DateUtils._
 import play.api.libs.json.JsObject
 import utils.StringUtils
-import models.FinancialProduct
+import models.User
 import slick.model.ForeignKeyAction
 
 // AUTO-GENERATED Slick data model
 /** Stand-alone Slick data model for immediate use */
-object UserRepository extends {
+object UserDao extends {
   val profile = slick.driver.PostgresDriver
-} with FinancialProductRepository
+} with UserDao
 
 /** Slick data model trait for extension, choice of backend or usage in the cake pattern. (Make sure to initialize this late.) */
-trait UserRepository {
+trait UserDao {
   import models.dao._
-  import models.dao.ParticeepDrivers.db_driver._
-  import driver.api._
+  import EnhancedPostgresDriver.api._
 
   // NOTE: GetResult mappers for plain SQL are only generated for tables where Slick knows how to map the types of all columns.
   import slick.jdbc.{GetResult => GR}
@@ -102,19 +100,7 @@ trait UserRepository {
   /** GetResult implicit for fetching User objects using plain SQL queries */
 
 
-  implicit def GetResultUser(implicit implicit def GetResultUser(implicit e0: GR[Option[String]], e1: GR[DateTime], e2: GR[Option[DateTime]], e3: GR[Option[JsObject]], e4: GR[String]): GR[User] = GR {
-    prs =>
-      import prs._
-      (User.apply _).tupled((
-        <<[String],
-        <<[String],
-        <<[String],
-        <<[DateTime],
-        <<?[DateTime],
-        <<?[String],
-        <<?[JsObject]
-      ))
-  }): GR[User] = GR {
+  implicit def GetResultUser(implicit e0: GR[Option[String]], e1: GR[DateTime], e2: GR[Option[DateTime]], e3: GR[Option[JsObject]], e4: GR[String]): GR[User] = GR {
     prs =>
       import prs._
       (User.apply _).tupled((
@@ -127,6 +113,7 @@ trait UserRepository {
         <<?[JsObject]
       ))
   }
+
   /** Table description of table user. Objects of this class serve as prototypes for rows in queries. */
   class UserTable(_tableTag: Tag) extends Table[User](_tableTag, "user") with TableHelper with TableHelperDeletable {
     def * = ( id, email, password, created_at, deleted_at, tag, custom ) <> ((User.apply _).tupled, User.unapply)
@@ -134,27 +121,27 @@ trait UserRepository {
 
   /** Maps whole row to an option. Useful for outer joins. */
     def ? = (
-      Rep.some(id),
-      Rep.some(email),
-      Rep.some(password),
-      Rep.some(created_at),
+      Rep.Some(id),
+      Rep.Some(email),
+      Rep.Some(password),
+      Rep.Some(created_at),
       deleted_at,
       tag,
       custom
     ).shaped.<>({ r =>
       import r._; _1.map(_ => (User.apply _).tupled((
-        _4,
-        _3.get,
         _5,
-        _2.get,
-        _1.get,
+        _4.get,
         _6,
-        _0.get
+        _3.get,
+        _2.get,
+        _7,
+        _1.get
       )))
     }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
 
 
-    val id = column[String]("id", O.PrimaryKey, O.Length(36, varying = true)
+    val id = column[String]("id", O.PrimaryKey, O.Length(36, varying = true))
     val email = column[String]("email")
     val password = column[String]("password")
     val created_at = column[DateTime]("created_at")
@@ -166,26 +153,6 @@ trait UserRepository {
   lazy val users = new TableQuery(tag => new UserTable(tag))
 }
 
-
-/** Slick data model trait for extension, choice of backend or usage in the cake pattern. (Make sure to initialize this late.) */
-trait UserComponent extends TableMapping {
-  self: HasDatabaseConfig[EnhancedPostgresDriver] =>
-
-  import profile.api._
-
-  class UserTable(tag: Tag) extends Table[User](tag, "user") with TableHelper {
-
-    val id = column[String]("id", O.PrimaryKey, O.Length(36, varying = true)
-    val email = column[String]("email")
-    val password = column[String]("password")
-    val created_at = column[DateTime]("created_at")
-    val deleted_at = column[Option[DateTime]]("deleted_at")
-    val tag = column[Option[String]]("tag")
-    val custom = column[Option[JsObject]]("custom")
-
-    def * = (id, email, password, created_at, deleted_at, tag, custom) <> (User.tupled, User.unapply _)
-  }
-}
 """
 
   private[this] val generate_small_light_code = """
@@ -198,14 +165,14 @@ import play.api.db.slick.HasDatabaseConfig
 import models.dao.EnhancedPostgresDriver
 import play.api.libs.json.JsObject
 
-trait UserComponent extends TableMapping {
+trait UserDao extends TableMapping {
   self: HasDatabaseConfig[EnhancedPostgresDriver] =>
 
   import profile.api._
 
-  class UserTable(tag: Tag) extends Table[User](tag, "user") with TableHelper {
+  class UserTable(_tableTag: Tag) extends Table[User](_tableTag, "user") with TableHelper {
 
-    val id = column[String]("id", O.PrimaryKey, O.Length(36, varying = true)
+    val id = column[String]("id", O.PrimaryKey, O.Length(36, varying = true))
     val email = column[String]("email")
     val password = column[String]("password")
     val created_at = column[DateTime]("created_at")
@@ -217,5 +184,21 @@ trait UserComponent extends TableMapping {
   }
 
 }
+
+
+@Singleton
+class UserRepository @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)
+    extends HasDatabaseConfigProvider[EnhancedPostgresDriver]
+    with CrudRepository[User, EnhancedPostgresDriver]
+    with EntityWithTableLifecycle[EnhancedPostgresDriver]
+    with UserDao {
+
+  import profile.api._
+
+  val tables = TableQuery[UserTable]
+  type TableType = UserTable
+
+}
+
 """
 }

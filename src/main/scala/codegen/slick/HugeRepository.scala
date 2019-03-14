@@ -14,12 +14,12 @@ import utils.StringUtils
 
 // AUTO-GENERATED Slick data model
 /** Stand-alone Slick data model for immediate use */
-object ${name}Repository extends {
+object ${name}Dao extends {
   val profile = slick.driver.PostgresDriver
-} with ${name}Repository
+} with ${name}Dao
 
 /** Slick data model trait for extension, choice of backend or usage in the cake pattern. (Make sure to initialize this late.) */
-trait ${name}Repository {
+trait ${name}Dao {
 
 
   import models.dao.ParticeepDrivers.db_driver._

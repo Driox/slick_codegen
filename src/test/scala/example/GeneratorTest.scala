@@ -1,8 +1,5 @@
 package test
 
-import codegen.CodeGenerator
-//import play.api.libs.json.JsObject
-
 import scala.collection.immutable.ListMap
 
 object GeneratorTest {
