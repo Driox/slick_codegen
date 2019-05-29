@@ -8,37 +8,49 @@ package models
 
 import models.dao._
 import play.api.libs.json.JsObject
-import org.joda.time.{DateTimeZone, DateTime}
-import utils.DateUtils._
-import utils.StringUtils
+import play.api.db.slick.HasDatabaseConfig
+import java.time.ZonedDateTime
+import models.dao.EnhancedPostgresDriver
 
 // AUTO-GENERATED Slick data model
-/** Stand-alone Slick data model for immediate use */
-object ${name}Dao extends {
-  val profile = slick.driver.PostgresDriver
-} with ${name}Dao
-
-/** Slick data model trait for extension, choice of backend or usage in the cake pattern. (Make sure to initialize this late.) */
+/**
+ * Slick data model trait for extension, choice of backend or usage in the cake pattern. (Make sure to initialize this late.)
+ * Usage :
+ *
+ * @Singleton
+ * class SubscriptionProjectionRepository @Inject() (
+ *   protected val dbConfigProvider: DatabaseConfigProvider
+ * )(implicit ec: ExecutionContext)
+ *     extends HasDatabaseConfigProvider[EnhancedPostgresDriver]
+ *     with SubscriptionProjectionDao {
+ *
+ *   import profile.api._
+ *
+ *   type TableType = SubscriptionProjectionTable
+ *   val tables = TableQuery[SubscriptionProjectionTable]
+ *
+ *   // ...
+ * }
+ */
 trait ${name}Dao {
+  self: HasDatabaseConfig[EnhancedPostgresDriver] =>
 
-
-  import models.dao.ParticeepDrivers.db_driver._
   import driver.api._
   import slick.collection.heterogeneous._
   import slick.collection.heterogeneous.syntax._
-
-  // NOTE: GetResult mappers for plain SQL are only generated for tables where Slick knows how to map the types of all columns.
   import slick.jdbc.{GetResult => GR}
-  type ${name}RowList = HCons[String, HCons[DateTime, HCons[Option[DateTime], HCons[Option[String], HCons[String, HCons[Option[Boolean], HCons[Option[String], HCons[Option[String], HCons[Option[String], HCons[Option[String], HCons[Option[DateTime], HCons[Option[String], HCons[Option[String], HCons[Option[String], HCons[Option[String], HCons[Option[String], HCons[Option[String], HCons[Option[String], HCons[Option[String], HCons[Option[Boolean], HCons[Option[Boolean], HCons[Option[String], HCons[Option[String], HCons[Option[DateTime], HCons[Option[String], HCons[Option[String], HCons[Option[StringSet], HCons[Option[StringSet], HCons[Option[Long], HCons[Option[String], HCons[Option[JsObject], HNil]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+
+  ${generate_RowList(name, input)}
+
   object ${name} {
-    def apply(hList: ${name}RowList): ${name} = new ${name}(${
-      input.keys.toList.zipWithIndex.map {
-        case (elem, index) =>
-          val tail = List.fill(index)("tail.").mkString("")
-          "hlist." + tail + "head"
-      }.mkString(", ")
-    })
-    def unapply(row: ${name}) = Some(${input.keys.map(c => s"row.$c").mkString(" :: ")} :: HNil)
+    def apply(hList: ${name}RowList): ${name} = hList match {
+      case ${hlist_name(input)} =>
+        ${name}(${input.keys.mkString(", ")})
+    }
+
+    def unapply(row: ${name}): Option[${name}RowList] = Some(
+      ${input.keys.map(c => s"row.$c").mkString(" :: ")} :: HNil
+    )
   }
 
   ${generate_GR(name, input)}
@@ -46,17 +58,32 @@ trait ${name}Dao {
   /** Table description of table user_search_data. Objects of this class serve as prototypes for rows in queries. */
   class ${name}Table(_tableTag: Tag) extends Table[${name}](_tableTag, "${table_name}") ${generate_table_helper(input)} {
 
-    def * = (${input.keys.mkString(" :: ")} :: HNIL <> (${name}.apply, ${name}.unapply)
     ${generateColumn(input)}
+
+    def * = (
+      ${hlist_name(input)}
+    ) <> (${name}.apply, ${name}.unapply)
   }
   /** Collection-like TableQuery object for table ${name}s */
   lazy val ${name}s = new TableQuery(tag => new ${name}Table(tag))
+
+  /** This is usefull for typesafe dynamic sorting */
+  implicit val columns: Map[String, ${name}Table => Rep[_]] = Map(
+    ${input.map{ case (name, _) => s""" "$name" -> { t => t.$name }"""}.mkString(", \n")}
+  )
 }
 
 """
   }
 
-    private[this] def generate_GR(name: String, input: Map[String, String]): String = {
+  private[this] def hlist_name(input: Map[String, String]):String = input.keys.mkString(" :: ") + " :: HNil"
+  private[this] def hlist_type(input: Map[String, String]):String = input.map(_._2).mkString(" :: ") + " :: HNil"
+
+  private[this] def generate_RowList(name: String, input: Map[String, String]): String = {
+    s"private[this] type ${name}RowList = ${hlist_type(input)}"
+  }
+
+  private[this] def generate_GR(name: String, input: Map[String, String]): String = {
     s"""/** GetResult implicit for fetching ${name} objects using plain SQL queries */
   implicit def GetResult${name}(implicit ${generate_GR_header(input)}): GR[${name}] = GR {
     prs =>
@@ -70,7 +97,7 @@ trait ${name}Dao {
             s"<<[${c_type}]"
           }
         }
-      }.mkString(" :: ") + " :: HNIL"
+      }.mkString(" :: ") + " :: HNil"
     })
   }"""
   }
