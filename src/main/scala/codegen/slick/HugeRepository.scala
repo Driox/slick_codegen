@@ -42,14 +42,14 @@ trait ${name}Dao {
 
   ${generate_RowList(name, input)}
 
-  object ${name} {
+  object ${name}Companion {
     def apply(hList: ${name}RowList): ${name} = hList match {
       case ${hlist_name(input)} =>
-        ${name}(${input.keys.mkString(", ")})
+        new ${name}(${input.keys.mkString(", ")})
     }
 
     def unapply(row: ${name}): Option[${name}RowList] = Some(
-      ${input.keys.map(c => s"row.$c").mkString(" :: ")} :: HNil
+      ${input.keys.toList.map(c => s"row.$c").mkString(" :: ")} :: HNil
     )
   }
 
@@ -62,7 +62,7 @@ trait ${name}Dao {
 
     def * = (
       ${hlist_name(input)}
-    ) <> (${name}.apply, ${name}.unapply)
+    ) <> (${name}Companion.apply, ${name}Companion.unapply)
   }
   /** Collection-like TableQuery object for table ${name}s */
   lazy val ${name}s = new TableQuery(tag => new ${name}Table(tag))
