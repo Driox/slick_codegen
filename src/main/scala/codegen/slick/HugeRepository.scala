@@ -35,7 +35,7 @@ import models.dao.EnhancedPostgresDriver
 trait ${name}Dao {
   self: HasDatabaseConfig[EnhancedPostgresDriver] =>
 
-  import driver.api._
+  import profile.api._
   import slick.collection.heterogeneous._
   import slick.collection.heterogeneous.syntax._
   import slick.jdbc.{GetResult => GR}
