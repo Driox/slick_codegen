@@ -13,13 +13,13 @@ class CodeRunnerTest extends AnyFlatSpec with should.Matchers with ScalatestHelp
     val case_class =
       """
 case class Broker(
-   id:              String                = StringUtils.generateUuid(),
-   created_at:      ZonedDateTime         = TimeUtils.now(),
-   updated_at:      ZonedDateTime         = TimeUtils.now(),
-   deleted_at:      Option[ZonedDateTime] = None,
+   id:              String                 = StringUtils.generateUuid(),
+   created_at:      OffsetDateTime         = TimeUtils.now(),
+   updated_at:      OffsetDateTime         = TimeUtils.now(),
+   deleted_at:      Option[OffsetDateTime] = None,
    registration_number: String,
-   tag:             Option[String]        = None,
-   custom:          Option[JsObject]      = None
+   tag:             Option[String]         = None,
+   custom:          Option[JsObject]       = None
 )
       """
     val repository = CodeGenerator.generate_from_case_class(case_class, true)

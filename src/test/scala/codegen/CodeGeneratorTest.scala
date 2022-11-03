@@ -71,7 +71,7 @@ custom: Option[JsObject]
     """
 package models
 
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 
 import models.dao._
 import play.api.db.slick.HasDatabaseConfig
@@ -160,7 +160,7 @@ trait UserDao {
   private[this] val generate_small_light_code = """
 package models
 
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 
 import models.dao._
 import play.api.db.slick.HasDatabaseConfig

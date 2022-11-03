@@ -9,7 +9,7 @@ package models
 import models.dao._
 import play.api.libs.json.JsObject
 import play.api.db.slick.HasDatabaseConfig
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 import models.dao.EnhancedPostgresDriver
 
 // AUTO-GENERATED Slick data model

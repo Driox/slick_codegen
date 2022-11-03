@@ -6,7 +6,7 @@ object SmallRepositoryFull extends Common {
     s"""
 package models
 
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 
 import models.dao._
 import play.api.db.slick.HasDatabaseConfig
