@@ -2,11 +2,13 @@ package test.codegen
 
 import codegen.CodeGenerator
 import org.scalatest._
+import flatspec._
+import matchers._
 
 import scala.collection.immutable.ListMap
 import test.helper.ScalatestHelper
 
-class CodeGeneratorTest extends FlatSpec with Matchers with ScalatestHelper {
+class CodeGeneratorTest extends AnyFlatSpec with should.Matchers with ScalatestHelper {
 
   "The case class generator " should "generate code from case class mono line" in {
       val case_class_content =

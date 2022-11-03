@@ -2,11 +2,13 @@ package test.codegen
 
 import codegen.CodeGenerator
 import org.scalatest._
+import flatspec._
+import matchers._
 
 import scala.collection.immutable.ListMap
 import test.helper.ScalatestHelper
 
-class LargeCodeGeneratorTest extends FlatSpec with Matchers with ScalatestHelper {
+class LargeCodeGeneratorTest extends AnyFlatSpec with should.Matchers with ScalatestHelper {
 
   "The basic generator" should "generate code from large Map" in {
     val name = "user"

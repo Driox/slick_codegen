@@ -2,9 +2,12 @@ package test.example
 
 import codegen.CodeGenerator
 import org.scalatest._
+import flatspec._
+import matchers._
+
 import test.helper.ScalatestHelper
 
-class CodeGeneratorTest extends FlatSpec with Matchers with ScalatestHelper {
+class CodeRunnerTest extends AnyFlatSpec with should.Matchers with ScalatestHelper {
 
   "The code generator " should "print a light result" in {
     val case_class =
