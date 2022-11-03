@@ -29,6 +29,11 @@ activator*
 node_modules
 npm-debug.log
 .DS_Store
+.metals/
+.bloop/
+.ammonite/
+project/metals.sbt
+.bsp
 
 
 react/\.idea
