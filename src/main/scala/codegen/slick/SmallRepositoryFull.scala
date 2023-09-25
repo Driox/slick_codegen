@@ -48,6 +48,11 @@ trait ${name}Dao {
   }
   /** Collection-like TableQuery object for table financialProducts */
   lazy val ${lowerCaseFirstLetter(name)}s = new TableQuery(tag => new ${name}Table(tag))
+
+  /** This is usefull for typesafe dynamic sorting */
+  implicit val columns: Map[String, ${name}Table => Rep[_]] = Map(
+    ${input.map{ case (name, _) => s""" "$name" -> { t => t.$name }"""}.mkString(", \n")}
+  )
 }
 
 """

@@ -25,6 +25,10 @@ trait ${name}Dao extends TableMapping {
     def * = (${input.keys.mkString(", ")}) <> (${name}.tupled, ${name}.unapply _)
   }
 
+  /** This is usefull for typesafe dynamic sorting */
+  implicit val columns: Map[String, ${name}Table => Rep[_]] = Map(
+${input.map{ case (name, _) => s""" "$name" -> { t => t.$name }"""}.mkString(", \n")}
+  )
 }
 
 @Singleton

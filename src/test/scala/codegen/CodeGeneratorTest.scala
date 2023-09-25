@@ -101,7 +101,6 @@ trait UserDao {
 
   /** GetResult implicit for fetching User objects using plain SQL queries */
 
-
   implicit def GetResultUser(implicit e0: GR[Option[String]], e1: GR[DateTime], e2: GR[Option[DateTime]], e3: GR[Option[JsObject]], e4: GR[String]): GR[User] = GR {
     prs =>
       import prs._
@@ -132,13 +131,13 @@ trait UserDao {
       custom
     ).shaped.<>({ r =>
       import r._; _1.map(_ => (User.apply _).tupled((
-        _5,
-        _4.get,
-        _6,
-        _3.get,
+        _1.get,
         _2.get,
-        _7,
-        _1.get
+        _3.get,
+        _4.get,
+        _5,
+        _6,
+        _7
       )))
     }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
 
@@ -153,6 +152,17 @@ trait UserDao {
   }
   /** Collection-like TableQuery object for table financialProducts */
   lazy val users = new TableQuery(tag => new UserTable(tag))
+
+  /** This is usefull for typesafe dynamic sorting */
+  implicit val columns: Map[String, UserTable => Rep[_]] = Map(
+    "id" -> { t => t.id },
+    "email" -> { t => t.email },
+    "password" -> { t => t.password },
+    "created_at" -> { t => t.created_at },
+    "deleted_at" -> { t => t.deleted_at },
+    "tag" -> { t => t.tag },
+    "custom" -> { t => t.custom }
+  )
 }
 
 """
@@ -185,8 +195,17 @@ trait UserDao extends TableMapping {
     def * = (id, email, password, created_at, deleted_at, tag, custom) <> (User.tupled, User.unapply _)
   }
 
+  /** This is usefull for typesafe dynamic sorting */
+  implicit val columns: Map[String, UserTable => Rep[_]] = Map(
+    "id" -> { t => t.id },
+    "email" -> { t => t.email },
+    "password" -> { t => t.password },
+    "created_at" -> { t => t.created_at },
+    "deleted_at" -> { t => t.deleted_at },
+    "tag" -> { t => t.tag },
+    "custom" -> { t => t.custom }
+  )
 }
-
 
 @Singleton
 class UserRepository @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)

@@ -50,14 +50,13 @@ class LargeCodeGeneratorTest extends AnyFlatSpec with should.Matchers with Scala
   }
 
   private[this] val generate_large_code =
-    """
-package models
+    """package models
 
 import models.dao._
 import play.api.libs.json.JsObject
-import org.joda.time.{DateTimeZone, DateTime}
-import utils.DateUtils._
-import utils.StringUtils
+import play.api.db.slick.HasDatabaseConfig
+import java.time.OffsetDateTime
+import models.dao.EnhancedPostgresDriver
 
 // AUTO-GENERATED Slick data model
 /**
@@ -89,14 +88,14 @@ trait UserDao {
 
   private[this] type UserRowList = String :: DateTime :: Option[DateTime] :: Option[String] :: String :: Option[String] :: Option[String] :: Option[String] :: Option[String] :: Option[DateTime] :: Option[String] :: Option[String] :: Option[String] :: Option[String] :: Option[String] :: Option[String] :: Option[String] :: Option[String] :: Option[Boolean] :: Option[Boolean] :: Option[String] :: Option[String] :: Option[DateTime] :: Option[String] :: Option[String] :: Option[String] :: Option[Long] :: Option[String] :: Option[String] :: Option[JsObject] :: HNil
 
-  object User {
+  object UserCompanion {
     def apply(hList: UserRowList): User = hList match {
       case id :: created_at :: deleted_at :: created_by :: email :: gender :: first_name :: last_name :: avatar_url :: birthday :: birth_place :: birth_country :: phone :: nationality :: bio :: sector :: investor_type :: linkedin_url :: does_pay_taxes :: has_been_claimed :: city :: wallet_id :: wallet_updated_at :: wallet_type :: status :: roles :: investor_score :: targeting_roles :: tag :: custom :: HNil =>
-        User(id, created_at, deleted_at, created_by, email, gender, first_name, last_name, avatar_url, birthday, birth_place, birth_country, phone, nationality, bio, sector, investor_type, linkedin_url, does_pay_taxes, has_been_claimed, city, wallet_id, wallet_updated_at, wallet_type, status, roles, investor_score, targeting_roles, tag, custom)
+        new User(id, created_at, deleted_at, created_by, email, gender, first_name, last_name, avatar_url, birthday, birth_place, birth_country, phone, nationality, bio, sector, investor_type, linkedin_url, does_pay_taxes, has_been_claimed, city, wallet_id, wallet_updated_at, wallet_type, status, roles, investor_score, targeting_roles, tag, custom)
     }
 
     def unapply(row: User): Option[UserRowList] = Some(
-      row.wallet_id :: row.tag :: row.deleted_at :: row.custom :: row.last_name :: row.wallet_type :: row.birthday :: row.id :: row.has_been_claimed :: row.created_at :: row.city :: row.targeting_roles :: row.status :: row.sector :: row.bio :: row.investor_type :: row.birth_place :: row.does_pay_taxes :: row.phone :: row.first_name :: row.avatar_url :: row.investor_score :: row.roles :: row.email :: row.gender :: row.created_by :: row.linkedin_url :: row.wallet_updated_at :: row.nationality :: row.birth_country :: HNil
+      row.id :: row.created_at :: row.deleted_at :: row.created_by :: row.email :: row.gender :: row.first_name :: row.last_name :: row.avatar_url :: row.birthday :: row.birth_place :: row.birth_country :: row.phone :: row.nationality :: row.bio :: row.sector :: row.investor_type :: row.linkedin_url :: row.does_pay_taxes :: row.has_been_claimed :: row.city :: row.wallet_id :: row.wallet_updated_at :: row.wallet_type :: row.status :: row.roles :: row.investor_score :: row.targeting_roles :: row.tag :: row.custom :: HNil
     )
   }
 
@@ -143,7 +142,7 @@ val custom = column[Option[JsObject]]("custom")
 
     def * = (
       id :: created_at :: deleted_at :: created_by :: email :: gender :: first_name :: last_name :: avatar_url :: birthday :: birth_place :: birth_country :: phone :: nationality :: bio :: sector :: investor_type :: linkedin_url :: does_pay_taxes :: has_been_claimed :: city :: wallet_id :: wallet_updated_at :: wallet_type :: status :: roles :: investor_score :: targeting_roles :: tag :: custom :: HNil
-    ) <> (User.apply, User.unapply)
+    ) <> (UserCompanion.apply, UserCompanion.unapply)
   }
   /** Collection-like TableQuery object for table Users */
   lazy val Users = new TableQuery(tag => new UserTable(tag))
@@ -182,6 +181,7 @@ val custom = column[Option[JsObject]]("custom")
  "custom" -> { t => t.custom }
   )
 }
+
 """
 
 }
